@@ -47,10 +47,13 @@ INSTALLED_APPS = [
     'djmoney',
     'accounts',
     'property',
+    'feed',
+    'message',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -155,6 +158,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -169,21 +177,21 @@ AUTH_USER_MODEL = 'accounts.User'
 
 SITE_NAME = 'HanapBHouse'
 
-# EMAIL_HOST = ''
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_PORT = ''
-# EMAIL_USE_TLS = False
+EMAIL_HOST = ''
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = ''
+EMAIL_USE_TLS = False
 
-# if (DEBUG == True):
-#     EMAIL_HOST = str(os.getenv('DEV_EMAIL_HOST'))
-#     EMAIL_HOST_USER = str(os.getenv('DEV_EMAIL_HOST_USER'))
-#     EMAIL_HOST_PASSWORD = str(os.getenv('DEV_EMAIL_HOST_PASSWORD'))
-#     EMAIL_PORT = str(os.getenv('DEV_EMAIL_PORT'))
-# else:
-EMAIL_HOST = str(os.getenv('PROD_EMAIL_HOST'))
-EMAIL_HOST_USER = str(os.getenv('PROD_EMAIL_HOST_USER'))
-EMAIL_HOST_PASSWORD = str(os.getenv('PROD_EMAIL_HOST_PASSWORD'))
-EMAIL_PORT = str(os.getenv('PROD_EMAIL_PORT'))
-EMAIL_USE_TLS = str(os.getenv('PROD_EMAIL_TLS'))
-EMAIL_BACKEND = str(os.getenv('PROD_EMAIL_BACKEND'))
+if (DEBUG == False):
+    EMAIL_HOST = str(os.getenv('DEV_EMAIL_HOST'))
+    EMAIL_HOST_USER = str(os.getenv('DEV_EMAIL_HOST_USER'))
+    EMAIL_HOST_PASSWORD = str(os.getenv('DEV_EMAIL_HOST_PASSWORD'))
+    EMAIL_PORT = str(os.getenv('DEV_EMAIL_PORT'))
+else:
+    EMAIL_HOST = str(os.getenv('PROD_EMAIL_HOST'))
+    EMAIL_HOST_USER = str(os.getenv('PROD_EMAIL_HOST_USER'))
+    EMAIL_HOST_PASSWORD = str(os.getenv('PROD_EMAIL_HOST_PASSWORD'))
+    EMAIL_PORT = str(os.getenv('PROD_EMAIL_PORT'))
+    EMAIL_USE_TLS = str(os.getenv('PROD_EMAIL_TLS'))
+    EMAIL_BACKEND = str(os.getenv('PROD_EMAIL_BACKEND'))

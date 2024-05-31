@@ -10,6 +10,8 @@ django-cors-headers = "*"
 python-dotenv = "*"
 djoser = "*"
 django-money = "*"
+whitenoise = "*"
+pillow = "*"
 
 [dev-packages]
 
