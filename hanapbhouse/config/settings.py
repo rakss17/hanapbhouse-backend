@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "corsheaders",
     'rest_framework',
     'rest_framework_simplejwt',
+    'djoser',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +65,20 @@ REST_FRAMEWORK = {
 
 }
 
+DJOSER = {
+    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'EMAIL': {
+        'activation': 'config.email.ActivationEmail'
+    },
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'ACTIVATION_URL': 'api/v1/accounts/activation/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/accounts/reset_password/{uid}/{token}',
+    'SERIALIZERS': {
+        'user_create': 'accounts.serializers.UserSerializer',
+    },
+}
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -73,7 +89,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,3 +162,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_EXPOSE_HEADERS = ['Content-Disposition']
+
+AUTH_USER_MODEL = 'accounts.User'
+
+SITE_NAME = 'HanapBHouse'
+
+# EMAIL_HOST = ''
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_PORT = ''
+# EMAIL_USE_TLS = False
+
+# if (DEBUG == True):
+#     EMAIL_HOST = str(os.getenv('DEV_EMAIL_HOST'))
+#     EMAIL_HOST_USER = str(os.getenv('DEV_EMAIL_HOST_USER'))
+#     EMAIL_HOST_PASSWORD = str(os.getenv('DEV_EMAIL_HOST_PASSWORD'))
+#     EMAIL_PORT = str(os.getenv('DEV_EMAIL_PORT'))
+# else:
+EMAIL_HOST = str(os.getenv('PROD_EMAIL_HOST'))
+EMAIL_HOST_USER = str(os.getenv('PROD_EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(os.getenv('PROD_EMAIL_HOST_PASSWORD'))
+EMAIL_PORT = str(os.getenv('PROD_EMAIL_PORT'))
+EMAIL_USE_TLS = str(os.getenv('PROD_EMAIL_TLS'))
+EMAIL_BACKEND = str(os.getenv('PROD_EMAIL_BACKEND'))

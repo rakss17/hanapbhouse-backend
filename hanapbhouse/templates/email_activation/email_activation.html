@@ -1,0 +1,32 @@
+{% load i18n %} {% block html_body %}
+<p>
+  {% blocktrans %}You're receiving this email because you need to finish
+  activation process on {{ site_name }}.{% endblocktrans %}
+</p>
+
+<p>
+  {% trans "Please click on the button below to activate your account in-app:"
+  %}
+</p>
+<!-- href="https://lemeow125.github.io/simple-redirect/#/redirect/{{ domain }}/activation/{{uid}}/{{token}}" -->
+<p>
+  <a
+    href="{{ protocol }}://{{ domain }}/api/v1/accounts/activation/{{uid}}/{{token}}"
+    style="
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    "
+  >
+    Activate Account
+  </a>
+</p>
+
+<p>
+  {% blocktrans %}Many thanks from the {{ site_name }} team{% endblocktrans %}
+</p>
+
+{% endblock html_body %}
