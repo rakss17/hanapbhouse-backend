@@ -12,6 +12,9 @@ class Address(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.street_1}, {self.street_2}'
+
 class Property(models.Model):
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
@@ -28,3 +31,6 @@ class Room(models.Model):
     tenant = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True, blank=True)
     is_vacant = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.tenant.username
