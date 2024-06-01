@@ -18,11 +18,12 @@ class Address(models.Model):
 class Property(models.Model):
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
-    number_of_slots = models.IntegerField(null=True, blank=True)
+    number_of_vacant = models.IntegerField(null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     inclusion = models.CharField(max_length=255, null=True, blank=True)
     rent = MoneyField(max_digits=14, decimal_places=2, default_currency='PHP')
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return self.landlord.username
