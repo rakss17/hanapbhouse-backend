@@ -17,6 +17,7 @@ class Notification(models.Model):
     subject = models.CharField(max_length=1000, null=True, blank=True)
     content = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    is_read = models.BooleanField(default=False)
 
     def __str__(self):
         return self.owner.username 
