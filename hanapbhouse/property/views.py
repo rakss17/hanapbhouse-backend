@@ -3,11 +3,16 @@ from decimal import Decimal, InvalidOperation
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Address, Coordinates, Property
+from .serializers import PropertySerializer
 from accounts.models import User
 
 # PROPERTY CREATION AND LISTING
 class PropertListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = PropertySerializer
+
+    def get_queryset(self):
+        return Property.objects.filter(landlord=self.request.user)
 
     def create(self, request, *args, **kwargs):
         # Address data from HTTP Post Request
