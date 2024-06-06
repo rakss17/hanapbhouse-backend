@@ -23,11 +23,10 @@ def create_superuser(sender, **kwargs):
         password = os.getenv('DJANGO_ADMIN_PASSWORD')
 
         if not Custom_User.objects.filter(username=username).exists():
-            # Create the superuser with is_active set to False
+            
             superuser = Custom_User.objects.create_superuser(
                 username=username, email=email, password=password)
 
-            # Activate the superuser
             superuser.is_active = True
             print('Created admin account')
             superuser.save()
