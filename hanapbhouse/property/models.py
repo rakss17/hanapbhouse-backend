@@ -2,6 +2,13 @@ from django.db import models
 from djmoney.models.fields import MoneyField
 from accounts.models import User
 
+class Coordinates(models.Model):
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.latitude}, {self.longitude}'
+    
 class Address(models.Model):
     street_1 = models.CharField(max_length=1000, null=True, blank=True)
     street_2 = models.CharField(max_length=1000, null=True, blank=True)
@@ -9,20 +16,19 @@ class Address(models.Model):
     city = models.CharField(max_length=1000, null=True, blank=True)
     province = models.CharField(max_length=1000, null=True, blank=True)
     country = models.CharField(max_length=1000, null=True, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    coordinates = models.ForeignKey(Coordinates, on_delete=models.SET_NULL, null=True, blank=True, related_name="address_coordinates")
 
     def __str__(self):
         return f'{self.street_1}, {self.street_2}'
 
 class Property(models.Model):
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
-    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
     number_of_vacant = models.IntegerField(null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     inclusion = models.CharField(max_length=255, null=True, blank=True)
-    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='PHP')
+    rent = MoneyField(max_digits=14, decimal_places=2, default_currency='PHP', null=True, blank=True)
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
