@@ -69,5 +69,5 @@ class PropertySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Property
-        fields = ['number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 
+        fields = ['id', 'number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 
                   'street_1', 'street_2', 'street_3', 'city', 'province', 'country', 'latitude', 'longitude']
