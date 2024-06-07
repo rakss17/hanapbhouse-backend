@@ -10,6 +10,9 @@ class FeedListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FeedSerializer
 
+    def get_queryset(self):
+        return Feed.objects.filter(owner=self.request.user)
+
     def create(self, request, *args, **kwargs):
          # Feed data from HTTP Post Request
         owner = request.data.get('owner')
