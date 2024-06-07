@@ -3,7 +3,7 @@ from .models import Property
 
 class PropertySerializer(serializers.ModelSerializer):
     address = serializers.SerializerMethodField()
-    landlord_full_name = serializers.SerializerMethodField()
+    landlord_fullname = serializers.SerializerMethodField()
 
     def get_address(self, obj):
         if obj.address:
@@ -20,14 +20,14 @@ class PropertySerializer(serializers.ModelSerializer):
             }
         return None
     
-    def get_landlord_full_name(self, obj):
+    def get_landlord_fullname(self, obj):
         if obj.landlord:
             landlord = obj.landlord
-            landlord_full_name = f'{landlord.first_name} {landlord.last_name}'
+            landlord_fullname = f'{landlord.first_name} {landlord.last_name}'
 
-            return landlord_full_name
+            return landlord_fullname
         return None
 
     class Meta:
         model = Property
-        fields = ['id', 'landlord', 'landlord_full_name','number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address']
+        fields = ['id', 'landlord', 'landlord_fullname','number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address']
