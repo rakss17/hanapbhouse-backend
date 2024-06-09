@@ -3,9 +3,18 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 import os
+import secrets
+import string
 
+def generate_custom_id():
+    segment_length = 5
+    num_segments = 3
+    characters = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    segments = [''.join(secrets.choice(characters) for _ in range(segment_length)) for _ in range(num_segments)]
+    return '-'.join(segments)
 
 class User(AbstractUser):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     contact_number = models.BigIntegerField(null=True, blank=True)
     gender = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)

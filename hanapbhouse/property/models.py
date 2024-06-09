@@ -1,8 +1,18 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from accounts.models import User
+import secrets
+import string
+
+def generate_custom_id():
+    segment_length = 5
+    num_segments = 3
+    characters = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    segments = [''.join(secrets.choice(characters) for _ in range(segment_length)) for _ in range(num_segments)]
+    return '-'.join(segments)
 
 class Coordinates(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
@@ -10,6 +20,7 @@ class Coordinates(models.Model):
         return f'{self.latitude}, {self.longitude}'
     
 class Address(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     street_1 = models.CharField(max_length=1000, null=True, blank=True)
     street_2 = models.CharField(max_length=1000, null=True, blank=True)
     street_3 = models.CharField(max_length=1000, null=True, blank=True)
@@ -22,6 +33,7 @@ class Address(models.Model):
         return f'{self.street_1}, {self.street_2}'
 
 class Property(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
     number_of_vacant = models.IntegerField(null=True, blank=True)
