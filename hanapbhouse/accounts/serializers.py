@@ -2,14 +2,15 @@ from rest_framework import serializers
 from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    contact_number = serializers.IntegerField(write_only=True)
-    gender = serializers.CharField(write_only=True)
-
+    contact_number = serializers.IntegerField()
+    gender = serializers.CharField()
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password',
-                  'contact_number', 'gender']
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'password', 'contact_number', 'gender']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
         
     def save(self, **kwargs):
         user = User.objects.create_user(
