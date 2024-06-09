@@ -57,6 +57,10 @@ class PublicFeedListView(generics.ListAPIView):
         if street_3 and city:
             queryset = queryset.filter(Q(content__address__street_3__icontains=street_3) & 
                                        Q(content__address__city__icontains=city))
+        elif street_3:
+            queryset = queryset.filter(Q(content__address__street_3__icontains=street_3))
+        elif city:
+            queryset = queryset.filter(Q(content__address__city__icontains=city))
             
         queryset = queryset.order_by('timestamp')
         page_size = 10
