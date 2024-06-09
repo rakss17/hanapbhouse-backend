@@ -41,13 +41,6 @@ class PropertListCreateView(generics.ListCreateAPIView):
         rent = request.data.get('rent')
 
         # Address model instance creation
-        coordinates_created = None
-        coordinates_filtered_from_db = Coordinates.objects.filter(latitude=latitude, longitude=longitude)
-        if not coordinates_filtered_from_db.exists():
-            coordinates = Coordinates.objects.create(latitude=latitude, longitude=longitude)
-            coordinates_created = coordinates
-        else:
-            coordinates_created = coordinates_filtered_from_db.first()
 
         address_created = None
         address_filtered_from_db = Address.objects.filter(street_1=street_1, street_2=street_2, street_3=street_3, 
@@ -60,11 +53,19 @@ class PropertListCreateView(generics.ListCreateAPIView):
                 city=city,
                 province=province,
                 country=country,
-                coordinates= coordinates_created
+                
             )
             address_created = address
         else:
             address_created = address_filtered_from_db.first()
+
+        coordinates_created = None
+        coordinates_filtered_from_db = Coordinates.objects.filter(latitude=latitude, longitude=longitude)
+        if not coordinates_filtered_from_db.exists():
+            coordinates = Coordinates.objects.create(latitude=latitude, longitude=longitude)
+            coordinates_created = coordinates
+        else:
+            coordinates_created = coordinates_filtered_from_db.first()
 
         landlord_instance = User.objects.get(id=landlord)
 
@@ -72,6 +73,7 @@ class PropertListCreateView(generics.ListCreateAPIView):
         property_created = Property.objects.create(
             landlord=landlord_instance,
             address=address_created,
+            coordinates=coordinates_created,
             number_of_vacant=number_of_vacant,
             type=property_type,
             description=description,
