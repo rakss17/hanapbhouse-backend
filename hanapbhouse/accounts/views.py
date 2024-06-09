@@ -5,7 +5,19 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from .models import User
+from .serializers import UserSerializer
 from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+
+class UserProfileView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+    
 
 def activate_account(request, uidb64, token):
     try:
@@ -33,3 +45,4 @@ def activate_account(request, uidb64, token):
         messages.error(request, 'Activation link is invalid or has expired.')
         return Response({'message': "Expired"}, status=404)
         # return redirect(f'{settings.FRONTEND_URL}/#/NotFound')
+
