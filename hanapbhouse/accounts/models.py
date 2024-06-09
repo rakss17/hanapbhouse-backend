@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
+from functions.generate_custom_id import generate_custom_id
 import os
 
-
 class User(AbstractUser):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     contact_number = models.BigIntegerField(null=True, blank=True)
     gender = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)

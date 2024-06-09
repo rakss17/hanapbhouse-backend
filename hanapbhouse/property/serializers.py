@@ -6,8 +6,9 @@ class PropertySerializer(serializers.ModelSerializer):
     landlord_fullname = serializers.SerializerMethodField()
 
     def get_address(self, obj):
-        if obj.address:
+        if obj.address and obj.coordinates:
             address = obj.address
+            coordinates = obj.coordinates
             return {
                 'street_1': address.street_1,
                 'street_2': address.street_2,
@@ -15,8 +16,8 @@ class PropertySerializer(serializers.ModelSerializer):
                 'city': address.city,
                 'province': address.province,
                 'country': address.country,
-                'latitude': address.coordinates.latitude if address.coordinates else None,
-                'longitude': address.coordinates.longitude if address.coordinates else None,
+                'latitude': coordinates.latitude,
+                'longitude': coordinates.longitude,
             }
         return None
     

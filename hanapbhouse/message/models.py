@@ -1,7 +1,9 @@
 from django.db import models
 from accounts.models import User
+import uuid
 
 class Message(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="message_sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="message_receiver")
     content = models.TextField(null=True, blank=True)
@@ -13,6 +15,7 @@ class Message(models.Model):
         return self.sender.username
 
 class Notification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="notification_owner")
     subject = models.CharField(max_length=1000, null=True, blank=True)
     content = models.TextField(null=True, blank=True)

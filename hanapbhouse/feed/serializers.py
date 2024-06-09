@@ -26,8 +26,8 @@ class FeedSerializer(serializers.ModelSerializer):
                     'city': address.city,
                     'province': address.province,
                     'country': address.country,
-                    'latitude': address.coordinates.latitude if address.coordinates else None,
-                    'longitude': address.coordinates.longitude if address.coordinates else None,
+                    'latitude': content.coordinates.latitude if content.coordinates else None,
+                    'longitude': content.coordinates.longitude if content.coordinates else None,
                 }
             }
         return None

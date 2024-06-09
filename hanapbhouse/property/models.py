@@ -1,29 +1,33 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from accounts.models import User
-
-class Coordinates(models.Model):
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.latitude}, {self.longitude}'
-    
+from functions.generate_custom_id import generate_custom_id
+   
 class Address(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     street_1 = models.CharField(max_length=1000, null=True, blank=True)
     street_2 = models.CharField(max_length=1000, null=True, blank=True)
     street_3 = models.CharField(max_length=1000, null=True, blank=True)
     city = models.CharField(max_length=1000, null=True, blank=True)
     province = models.CharField(max_length=1000, null=True, blank=True)
     country = models.CharField(max_length=1000, null=True, blank=True)
-    coordinates = models.ForeignKey(Coordinates, on_delete=models.SET_NULL, null=True, blank=True, related_name="address_coordinates")
-
+    
     def __str__(self):
         return f'{self.street_1}, {self.street_2}'
+    
+class Coordinates(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.latitude}, {self.longitude}'
 
 class Property(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
+    coordinates = models.ForeignKey(Coordinates, on_delete=models.SET_NULL, null=True, blank=True, related_name="property_coordinates")
     number_of_vacant = models.IntegerField(null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
