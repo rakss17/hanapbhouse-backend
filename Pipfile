@@ -12,6 +12,9 @@ djoser = "*"
 django-money = "*"
 whitenoise = "*"
 pillow = "*"
+channels = "*"
+channels-redis = "*"
+daphne = "*"
 
 [dev-packages]
 

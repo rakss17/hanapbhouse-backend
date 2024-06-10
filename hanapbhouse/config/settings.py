@@ -34,16 +34,18 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
     'djoser',
+    'channels',
     'djmoney',
     'accounts',
     'property',
@@ -110,7 +112,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -195,3 +197,12 @@ else:
     EMAIL_PORT = str(os.getenv('PROD_EMAIL_PORT'))
     EMAIL_USE_TLS = str(os.getenv('PROD_EMAIL_TLS'))
     EMAIL_BACKEND = str(os.getenv('PROD_EMAIL_BACKEND'))
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
