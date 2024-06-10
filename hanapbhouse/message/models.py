@@ -4,6 +4,7 @@ import uuid
 
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    room_name = models.CharField(max_length=255, null=True, blank=True)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="message_sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="message_receiver")
     content = models.TextField(null=True, blank=True)
