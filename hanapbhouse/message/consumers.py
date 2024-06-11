@@ -27,10 +27,14 @@ class MessageConsumer(AsyncWebsocketConsumer):
       
             for message in messages:
                 await self.send(text_data=json.dumps({
-                    'message': message['content'], 
-                    'sender': message['sender'],
+                    'message_id': message['id'],
+                    'room_name': message['room_name'],
+                    'content': message['content'], 
+                    'sender_id': message['sender'],
+                    'sender_fullname': message['sender_fullname'],
                     'send_timestamp': message['send_timestamp'],
-                    'receiver': message['receiver'],
+                    'receiver_id': message['receiver'],
+                    'receiver_fullname': message['receiver_fullname'],
                     'read_timestamp': message['read_timestamp'],
                     'is_read_by_receiver': message['is_read_by_receiver']
                 }))
