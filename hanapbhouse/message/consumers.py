@@ -1,40 +1,41 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Message
-from django.contrib.auth.models import User
-from asgiref.sync import sync_to_async
-from channels.exceptions import DenyConnection
+from accounts.models import User
+from channels.db import database_sync_to_async
+from .serializers import MessageSerializer
+
 
 class MessageConsumer(AsyncWebsocketConsumer):
+    
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
+            
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
         await self.accept()
-        
 
         # Send previous messages to WebSocket
-        messages =  await self.get_messages(self.room_name)
+        messages = await self.get_messages(self.room_name)
+    
         for message in messages:
             await self.send(text_data=json.dumps({
-                'message': message.content,
-                'sender': message.sender,
-                'send_timestamp': message.send_timestamp.isoformat(),
-                'receiver': message.receiver,
-                'read_timestamp': message.read_timestamp.isoformat(),
-                'is_read_by_receiver': message.is_read_by_receiver
+                'message': message['content'],  # Use square brackets and quotes
+                'sender': message['sender'],
+                'send_timestamp': message['send_timestamp'],
+                'receiver': message['receiver'],
+                'read_timestamp': message['read_timestamp'],
+                'is_read_by_receiver': message['is_read_by_receiver']
             }))
-    
-    @sync_to_async
+
+    @database_sync_to_async
     def get_messages(self, room_name):
-        try:
-            return Message.objects.filter(room_name=room_name).order_by('send_timestamp')
-        except Message.DoesNotExist:
-            raise DenyConnection("Invalid Message")
+        queryset = Message.objects.filter(room_name=room_name).order_by('send_timestamp')
+        return MessageSerializer(queryset, many=True).data
 
     async def disconnect(self, close_code):
         # Leave room group
