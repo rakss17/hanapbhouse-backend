@@ -4,33 +4,36 @@ from .models import Message
 from accounts.models import User
 from channels.db import database_sync_to_async
 from .serializers import MessageSerializer
-
+from django.contrib.auth.models import AnonymousUser
 
 class MessageConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
-            
-        # Join room group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
 
-        # Send previous messages to WebSocket
-        messages = await self.get_messages(self.room_name)
-    
-        for message in messages:
-            await self.send(text_data=json.dumps({
-                'message': message['content'],  # Use square brackets and quotes
-                'sender': message['sender'],
-                'send_timestamp': message['send_timestamp'],
-                'receiver': message['receiver'],
-                'read_timestamp': message['read_timestamp'],
-                'is_read_by_receiver': message['is_read_by_receiver']
-            }))
+        if isinstance(self.scope['user'], AnonymousUser):      
+            await self.close()
+        else:
+            # Join room group
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+            await self.accept()
+            
+            # Send previous messages to WebSocket
+            messages = await self.get_messages(self.room_name)
+      
+            for message in messages:
+                await self.send(text_data=json.dumps({
+                    'message': message['content'], 
+                    'sender': message['sender'],
+                    'send_timestamp': message['send_timestamp'],
+                    'receiver': message['receiver'],
+                    'read_timestamp': message['read_timestamp'],
+                    'is_read_by_receiver': message['is_read_by_receiver']
+                }))
 
     @database_sync_to_async
     def get_messages(self, room_name):
