@@ -28,7 +28,11 @@ class MessageSerializer(serializers.ModelSerializer):
         
         # Convert send_timestamp and read_timestamp to local timezone
         send_time_local = localtime(instance.send_timestamp)
-        read_time_local = localtime(instance.read_timestamp)
+        read_time_local = None
+        if instance.read_timestamp:
+            read_time_local = localtime(instance.read_timestamp)
+        else:
+            read_time_local = None
         
         # Function to format time in 12-hour format
         def format_time(datetime_obj):
@@ -44,19 +48,20 @@ class MessageSerializer(serializers.ModelSerializer):
             
             # Determine the date one year ago from today, considering the start of the year
             not_current_year = today - timedelta(days=days_into_year + 1)
-            if datetime_obj.date() == today:
+            if datetime_obj and datetime_obj.date() == today:
                 return format_time(datetime_obj)  # Just the time for today
-            elif datetime_obj >= now() - timedelta(days=7):  # Within the last 7 days
+            elif datetime_obj and datetime_obj >= now() - timedelta(days=7):  # Within the last 7 days
                 return f"{datetime_obj.strftime('%a')} at {format_time(datetime_obj)}"  # Day abbreviation and time
-            elif datetime_obj.date() >= not_current_year:  # Within current year but more than 7 days ago
+            elif datetime_obj and datetime_obj.date() >= not_current_year:  # Within current year but more than 7 days ago
                 day = datetime_obj.day
                 formatted_day = str(day) if day > 9 else f'0{day}' 
                 return f"{datetime_obj.strftime('%b')} {formatted_day} at {format_time(datetime_obj)}"  # Month abbreviation, day, and time
             else:
                 # Not current year or previous years, include the year in the format
-                day = datetime_obj.day
-                formatted_day = str(day) if day > 9 else f'0{day}'
-                return f"{datetime_obj.strftime('%b')} {formatted_day}, {datetime_obj.strftime('%Y')} at {format_time(datetime_obj)}"
+                if datetime_obj:
+                    day = datetime_obj.day
+                    formatted_day = str(day) if day > 9 else f'0{day}'
+                    return f"{datetime_obj.strftime('%b')} {formatted_day}, {datetime_obj.strftime('%Y')} at {format_time(datetime_obj)}"
         
         representation['send_timestamp'] = format_date_and_time(send_time_local)
         representation['read_timestamp'] = format_date_and_time(read_time_local)
