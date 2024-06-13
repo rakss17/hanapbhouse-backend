@@ -1,10 +1,10 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .models import Message
+from .models import Message, UserChannelTracking
 from accounts.models import User
 from django.utils import timezone
 from channels.db import database_sync_to_async
-from .serializers import MessageSerializer
+from .serializers import MessageSerializer, UserChannelTracking
 from django.contrib.auth.models import AnonymousUser
 
 class MessageConsumer(AsyncWebsocketConsumer):
@@ -25,6 +25,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
             )
             await self.channel_layer.group_add(self.user_id, self.channel_name)
             await self.accept()
+            await self.create_channel(self.room_group_name)
 
             read_messages = await self.get_read_messages_by_receiver(self.user_id)
             if read_messages is not None:
@@ -64,6 +65,17 @@ class MessageConsumer(AsyncWebsocketConsumer):
                         'read_timestamp': message['read_timestamp'],
                         'is_read_by_receiver': message['is_read_by_receiver']
                     })
+    
+    @database_sync_to_async
+    def create_channel(self, channel_name):
+        user = self.user_id
+        filtered_channel_tracking = UserChannelTracking.objects.filter(user=user)
+        if not filtered_channel_tracking.exists():
+            created_channel = UserChannelTracking.objects.create(channel_name=channel_name, user=user)
+
+            return UserChannelTracking(created_channel)
+        else:
+            print({user}, "has already joined a channel")
                 
     @database_sync_to_async
     def get_messages(self, room_name, user_id):
@@ -92,6 +104,16 @@ class MessageConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        await self.channel_layer.group_discard(self.user_id, self.channel_name)
+        delete_channel = await self.delete_channel()
+        print(delete_channel)
+
+    @database_sync_to_async
+    def delete_channel(self):
+        filtered_channel = UserChannelTracking.objects.filter(channel_name=self.room_group_name, user=self.user_id)
+        if filtered_channel.exists():
+            filtered_channel.delete()
+            return f"{self.user_id} has been disconnected from channel: {self.room_group_name}"
 
     async def receive(self, text_data):
     
@@ -104,10 +126,9 @@ class MessageConsumer(AsyncWebsocketConsumer):
         sender_obj = await self.get_sender_obj(sender)
         receiver_obj = await self.get_receiver_obj(receiver)
         message_obj = await self.create_message(self.room_name, message, sender_obj, receiver_obj)
-        print("scope", self.scope['user'].id)
 
         read_messages = await self.get_read_messages_by_sender(receiver)
-        print("read_messages", read_messages)
+
         if read_messages is not None:
             for message in read_messages:
                 sender_user_id = message['sender']  # Ensure this is the correct field and type
@@ -166,11 +187,19 @@ class MessageConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_read_messages_by_sender(self, user_id):
         time_now = timezone.localtime(timezone.now())
+        receiver_in_channel = None
+        get_channel = UserChannelTracking.objects.filter(channel_name=self.room_group_name, user=user_id)
+        if get_channel.exists():
+            print("get channel", get_channel)
+            first_user_get_channel = get_channel.first()
+            receiver_in_channel = first_user_get_channel.user
+        print("receiver_in_channel", receiver_in_channel)
         filtered_by_receiver = Message.objects.filter(receiver=user_id)
         messages_data = []
         print("user_id", user_id)
         for filtered in filtered_by_receiver:
-            if filtered.is_read_by_receiver == False and filtered.read_timestamp is None and user_id == user_id:
+            print("filtered.receiver", filtered.receiver.id)
+            if filtered.is_read_by_receiver == False and filtered.read_timestamp is None and filtered.receiver.id == receiver_in_channel:
                 filtered.is_read_by_receiver = True
                 filtered.read_timestamp = time_now
                 filtered.save()
@@ -183,10 +212,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
         filtered_by_room_name = Message.objects.filter(id=message_id).first()
         print("filtered_by_room_name", filtered_by_room_name)
         return MessageSerializer(filtered_by_room_name).data
-    
-    
-    
-    
+
     async def send_update_message(self, event):
         try:
             # Send message to WebSocket
