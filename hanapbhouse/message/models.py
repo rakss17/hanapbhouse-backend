@@ -24,4 +24,12 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.owner.username 
+        return self.owner.username
+
+class UserChannelTracking(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    channel_name = models.CharField(max_length=1000, null=True, blank=True)
+    user = models.CharField(max_length=500, null=True, blank=True)
+
+    def __str__(self):
+        return self.channel_name 

@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import Message
+from .models import Message, UserChannelTracking
 from django.utils.timezone import now, localtime
-from django.utils.dateformat import DateFormat
 from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 
@@ -71,3 +70,8 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'room_name', 'content', 'sender', 'sender_fullname', 'send_timestamp', 'receiver', 'receiver_fullname', 'read_timestamp', 'is_read_by_receiver']
+
+class UserChannelTrackingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserChannelTracking
+        fields = '__all__'
