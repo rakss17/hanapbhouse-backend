@@ -55,27 +55,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-            # Fetching all previous messages that saved in database and sending to room group channel
-            messages = await self.get_messages(self.room_name, self.page_number)
-            
-            for message in messages['messages']:
-                await self.channel_layer.group_send(
-                    self.room_group_name, 
-                    { 
-                        'type': 'chat_message',
-                        'message_id': message['id'],
-                        'room_name': message['room_name'],
-                        'content': message['content'], 
-                        'sender_id': message['sender'],
-                        'sender_fullname': message['sender_fullname'],
-                        'send_timestamp': message['send_timestamp'],
-                        'receiver_id': message['receiver'],
-                        'receiver_fullname': message['receiver_fullname'],
-                        'read_timestamp': message['read_timestamp'],
-                        'is_read_by_receiver': message['is_read_by_receiver'],
-                        'next_page': messages['next_page'] 
-                    })
-    
     # function for creating channel and saving it to database
     @database_sync_to_async
     def create_channel(self, channel_name):
@@ -87,20 +66,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
             return UserChannelTracking(created_channel)
         else:
             print({user}, "has already joined channel named: ", {channel_name})
-                
-    # function for fetching previous messages            
-    @database_sync_to_async
-    def get_messages(self, room_name, page_number=1):
-        page_size = 10
-        queryset = Message.objects.filter(room_name=room_name)
-
-        queryset = queryset.order_by('-send_timestamp')
-        paginator = Paginator(queryset, page_size)
-        page_obj = paginator.get_page(page_number)
-
-        serializer = MessageSerializer(page_obj.object_list, many=True)
-
-        return ({'messages': serializer.data, 'next_page': page_obj.has_next() and page_obj.next_page_number() or None})
     
     # function for updating unread messages to read message when receiver connect to the channel
     @database_sync_to_async
@@ -185,8 +150,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
                 'receiver_id': message_obj_filtered['receiver'],
                 'receiver_fullname': message_obj_filtered['receiver_fullname'],
                 'read_timestamp': message_obj_filtered['read_timestamp'],
-                'is_read_by_receiver': message_obj_filtered['is_read_by_receiver'],
-                'next_page': "null"
+                'is_read_by_receiver': message_obj_filtered['is_read_by_receiver']
             }
         )
 
@@ -267,8 +231,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
                 'receiver_id': event['receiver_id'],
                 'receiver_fullname': event['receiver_fullname'],
                 'read_timestamp': event['read_timestamp'],
-                'is_read_by_receiver': event['is_read_by_receiver'],
-                'next_page': event['next_page']
+                'is_read_by_receiver': event['is_read_by_receiver']
             }))
             
         except Exception as e:
