@@ -6,7 +6,6 @@ from django.utils import timezone
 from channels.db import database_sync_to_async
 from .serializers import MessageSerializer, UserChannelTracking
 from django.contrib.auth.models import AnonymousUser
-from django.core.paginator import Paginator
 
 class MessageConsumer(AsyncWebsocketConsumer):
     
@@ -17,8 +16,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
 
         # Fetching user id from the url to create a own channel
         self.user_id = self.scope['url_route']['kwargs']['user_id']
-
-        self.page_number = self.scope['url_route']['kwargs']['page_number']
         
         # Authentication for authenticated user with JWT Token
         if isinstance(self.scope['user'], AnonymousUser):      
