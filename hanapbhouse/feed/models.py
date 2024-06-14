@@ -12,3 +12,12 @@ class Feed(models.Model):
 
     def __str__(self):
         return self.owner.username
+    
+class SavedFeed(models.Model):
+    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="savedfeed_owner")
+    content = models.ForeignKey(Feed, on_delete=models.CASCADE, null=True, blank=True, related_name="savedfeed_content")
+    timestamp = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def __str__(self):
+        return self.owner.username
