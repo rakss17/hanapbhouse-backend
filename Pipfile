@@ -12,6 +12,10 @@ djoser = "*"
 django-money = "*"
 whitenoise = "*"
 pillow = "*"
+channels = "*"
+channels-redis = "*"
+daphne = "*"
+drf-spectacular = {extras = ["sidecar"], version = "*"}
 
 [dev-packages]
 
