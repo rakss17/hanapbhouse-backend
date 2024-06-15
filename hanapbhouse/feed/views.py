@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Feed
-from .serializers import FeedSerializer
+from .models import Feed, SavedFeed
+from .serializers import FeedSerializer, SavedFeedSerializer
 from accounts.models import User
 from property.models import Property
 
@@ -49,7 +49,7 @@ class PublicFeedListView(generics.ListAPIView):
         category = request.query_params.get('category')
 
         timezone.activate('Asia/Manila')
-        queryset = Feed.objects.all()
+        queryset = Feed.objects.all().exclude(owner=self.request.user)
 
         if category and category != "All":
             queryset = queryset.filter(Q(content__type__icontains=category))
@@ -74,3 +74,34 @@ class PublicFeedListView(generics.ListAPIView):
             'feed_data': serializer.data,
             'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
         }, status=200)
+    
+    
+class SavedFeedCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SavedFeedSerializer
+
+    def get_queryset(self):
+        return SavedFeed.objects.filter(owner=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        owner = request.data.get('owner')
+        content = request.data.get('content')
+
+        owner_instance = User.objects.get(id=owner)
+        feed_instance = Feed.objects.get(id=content)
+        SavedFeed.objects.create(
+            owner=owner_instance,
+            content=feed_instance,
+        )
+
+        return Response({"message": "Saved successfully"}, status=201)\
+        
+class UnsavedFeedView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = SavedFeed.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        
+        instance = self.get_object()
+        instance.delete()
+        return Response({"message": "Unsaved successfully"}, status=200)
