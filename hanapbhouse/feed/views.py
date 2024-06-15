@@ -94,4 +94,14 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
             content=feed_instance,
         )
 
-        return Response({"message": "Saved successfully"}, status=201)
+        return Response({"message": "Saved successfully"}, status=201)\
+        
+class UnsavedFeedView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = SavedFeed.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        
+        instance = self.get_object()
+        instance.delete()
+        return Response({"message": "Unsaved successfully"}, status=200)
