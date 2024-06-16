@@ -8,7 +8,7 @@ from .models import Feed, SavedFeed
 from .serializers import FeedSerializer, SavedFeedSerializer
 from accounts.models import User
 from property.models import Property
-from .permissions import IsOwnerOrReadOnly
+from utils.permissions import IsOwnerOrReadOnly
 
 class FeedListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
