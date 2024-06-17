@@ -5,6 +5,7 @@ from property.serializers import PropertySerializer
 class FeedSerializer(serializers.ModelSerializer):
     content = PropertySerializer()
     owner_fullname = serializers.SerializerMethodField()
+    owner_image = serializers.SerializerMethodField()
 
     def get_owner_fullname(self, obj):
         if obj.owner:
@@ -12,10 +13,17 @@ class FeedSerializer(serializers.ModelSerializer):
             owner_fullname = f'{owner.first_name} {owner.last_name}'
             return owner_fullname
         return None
+    
+    def get_owner_image(self, obj):
+        if obj.owner:
+            owner = obj.owner
+            owner_image = owner.image.url
+            return owner_image
+        return None
 
     class Meta:
         model = Feed
-        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp']
+        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp', 'owner_image']
 
     def update(self, instance, validated_data):
         content_data = validated_data.pop('content', None)
