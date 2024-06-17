@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import User
-from utils.validation import validate_unique_username, validate_unique_email
+from utils.validators import validate_unique_username, validate_unique_email
     
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(validators=[validate_unique_username])

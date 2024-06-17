@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import User
 from property.models import Property
-from utils.generate_custom_id import generate_custom_id
+from utils.helpers import generate_custom_id
 
 class Feed(models.Model):
     id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
