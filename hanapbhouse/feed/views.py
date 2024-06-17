@@ -8,6 +8,7 @@ from .models import Feed, SavedFeed
 from .serializers import FeedSerializer, SavedFeedSerializer
 from accounts.models import User
 from property.models import Property
+from utils.permissions import IsOwnerOrReadOnly
 
 class FeedListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -75,6 +76,35 @@ class PublicFeedListView(generics.ListAPIView):
             'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
         }, status=200)
     
+class FeedUpdateDetailView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    queryset = Feed.objects.all()
+    serializer_class = FeedSerializer
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+
+            new_image = request.FILES.get('image', None)
+        
+            if new_image:
+
+                if instance.image:
+                    instance.image.delete()
+
+                instance.image = new_image
+            else:
+                
+                if instance.image:
+                    instance.image.delete()
+
+            serializer.save()
+            return Response(serializer.data, status=200)
+
+        return Response(serializer.errors, status=400)
     
 class SavedFeedCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
