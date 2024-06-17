@@ -150,6 +150,7 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         
 class UnsavedFeedView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SavedFeedSerializer
     queryset = SavedFeed.objects.all()
 
     def destroy(self, request, *args, **kwargs):
