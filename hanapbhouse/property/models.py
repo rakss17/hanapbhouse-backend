@@ -1,6 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
-from accounts.models import User
+from accounts.models import CustomUser
 from utils.helpers import generate_custom_id
    
 class Address(models.Model):
@@ -25,7 +25,7 @@ class Coordinates(models.Model):
 
 class Property(models.Model):
     id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
-    landlord = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
+    landlord = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
     coordinates = models.ForeignKey(Coordinates, on_delete=models.SET_NULL, null=True, blank=True, related_name="property_coordinates")
     number_of_vacant = models.IntegerField(null=True, blank=True)
@@ -39,7 +39,7 @@ class Property(models.Model):
         return self.landlord.username
     
 class Room(models.Model):
-    tenant = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
+    tenant = models.OneToOneField(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
     property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True, blank=True)
     is_vacant = models.BooleanField(default=True)
 

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import UntypedToken
-from accounts.models import User
+from accounts.models import CustomUser
 from channels.middleware import BaseMiddleware
 from channels.auth import AuthMiddlewareStack
 from django.db import close_old_connections
@@ -20,7 +20,7 @@ def get_user(validated_token):
         print(f"{user}")
         return user
 
-    except User.DoesNotExist:
+    except CustomUser.DoesNotExist:
         return AnonymousUser()
 
 

@@ -95,7 +95,7 @@ DJOSER = {
     'ACTIVATION_URL': 'api/v1/accounts/activation/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'api/v1/accounts/reset_password/{uid}/{token}',
     'SERIALIZERS': {
-        'user_create': 'accounts.serializers.UserSerializer',
+        'user_create': 'accounts.serializers.CustomUserSerializer',
     },
 }
 
@@ -188,7 +188,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_EXPOSE_HEADERS = ['Content-Disposition']
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 SITE_NAME = 'HanapBHouse'
 

@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from .models import User
+from .models import CustomUser
 from utils.validators import validate_unique_username, validate_unique_email
     
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(validators=[validate_unique_username])
     email = serializers.EmailField(validators=[validate_unique_email])
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ['id','username', 'email', 'first_name', 'last_name', 'password', 'contact_number', 'gender', 'image']
         extra_kwargs = {
             'password': {'write_only': True}
@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         contact_number = validated_data.get('contact_number')
         gender = validated_data.get('gender')
 
-        user = User.objects.create_user(
+        user = CustomUser.objects.create_user(
             username=username,
             email=email,
             first_name=first_name,

@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from .models import Address, Coordinates, Property
 from .serializers import PropertySerializer
-from accounts.models import User
+from accounts.models import CustomUser
 
 # PROPERTY CREATION AND LISTING
 class PropertListCreateView(generics.ListCreateAPIView):
@@ -67,7 +67,7 @@ class PropertListCreateView(generics.ListCreateAPIView):
         else:
             coordinates_created = coordinates_filtered_from_db.first()
 
-        landlord_instance = User.objects.get(id=landlord)
+        landlord_instance = CustomUser.objects.get(id=landlord)
 
         # Property model instance creation
         property_created = Property.objects.create(

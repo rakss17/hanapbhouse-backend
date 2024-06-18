@@ -4,8 +4,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
-from .models import User
-from .serializers import UserSerializer
+from .models import CustomUser
+from .serializers import CustomUserSerializer
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +13,7 @@ from utils.permissions import IsOwnerOrReadOnly
 
 class UserProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    serializer_class = UserSerializer
+    serializer_class = CustomUserSerializer
 
     def get_object(self):
         return self.request.user
@@ -47,8 +47,8 @@ class UserProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 def activate_account(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):

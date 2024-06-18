@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Message, UserChannelTracking
-from accounts.models import User
+from accounts.models import CustomUser
 from django.utils import timezone
 from channels.db import database_sync_to_async
 from .serializers import MessageSerializer, UserChannelTracking
@@ -155,11 +155,11 @@ class MessageConsumer(AsyncWebsocketConsumer):
     # fetching sender and receiver instances
     @database_sync_to_async
     def get_sender_obj(self, sender):
-        user_instance = User.objects.get(id=sender)
+        user_instance = CustomUser.objects.get(id=sender)
         return user_instance
     @database_sync_to_async
     def get_receiver_obj(self, receiver):
-        user_instance = User.objects.get(id=receiver)
+        user_instance = CustomUser.objects.get(id=receiver)
         return user_instance
     
     # functions for creating message and save to database
