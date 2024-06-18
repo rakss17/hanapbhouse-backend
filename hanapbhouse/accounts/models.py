@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-from utils.generate_custom_id import generate_custom_id
+from utils.helpers import generate_custom_id
 import os
 
 class User(AbstractUser):

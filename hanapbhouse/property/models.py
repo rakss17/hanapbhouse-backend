@@ -1,7 +1,7 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from accounts.models import User
-from utils.generate_custom_id import generate_custom_id
+from utils.helpers import generate_custom_id
    
 class Address(models.Model):
     id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)

@@ -105,6 +105,28 @@ class FeedUpdateDetailView(generics.UpdateAPIView):
             return Response(serializer.data, status=200)
 
         return Response(serializer.errors, status=400)
+
+class VisitFeedByUserView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FeedSerializer
+
+    def list(self, request, *args, **kwargs):
+        owner = request.query_params.get('owner')
+
+        timezone.activate('Asia/Manila')
+        queryset = Feed.objects.filter(owner=owner)
+
+        page_size = 10
+        page_number = request.query_params.get('page', 1)
+        paginator = Paginator(queryset, page_size)
+        page_obj = paginator.get_page(page_number)
+
+        serializer = self.serializer_class(page_obj.object_list, many=True)
+
+        return Response({
+            'feed_data': serializer.data,
+            'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
+        }, status=200)
     
 class SavedFeedCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -128,6 +150,7 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         
 class UnsavedFeedView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SavedFeedSerializer
     queryset = SavedFeed.objects.all()
 
     def destroy(self, request, *args, **kwargs):
