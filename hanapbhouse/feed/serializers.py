@@ -3,20 +3,23 @@ from .models import Feed, SavedFeed
 from property.serializers import PropertySerializer
 from django.utils.timezone import localtime
 from utils.helpers import format_date_and_time
+from drf_spectacular.utils import extend_schema_field
+from typing import Optional
 
 class FeedSerializer(serializers.ModelSerializer):
     content = PropertySerializer()
     owner_fullname = serializers.SerializerMethodField()
     owner_image = serializers.SerializerMethodField()
 
-    def get_owner_fullname(self, obj):
+    def get_owner_fullname(self, obj) -> Optional[str]:
         if obj.owner:
             owner = obj.owner
             owner_fullname = f'{owner.first_name} {owner.last_name}'
             return owner_fullname
         return None
     
-    def get_owner_image(self, obj):
+    @extend_schema_field(serializers.ImageField())
+    def get_owner_image(self, obj) -> Optional[str]:
         if obj.owner:
             owner = obj.owner
             owner_image = owner.image.url
@@ -57,7 +60,7 @@ class SavedFeedSerializer(serializers.ModelSerializer):
     content = FeedSerializer()
     owner_fullname = serializers.SerializerMethodField()
     
-    def get_owner_fullname(self, obj):
+    def get_owner_fullname(self, obj) -> Optional[str]:
         if obj.owner:
             owner = obj.owner
             owner_fullname = f'{owner.first_name} {owner.last_name}'

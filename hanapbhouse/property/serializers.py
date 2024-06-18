@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Property, Address, Coordinates
+from typing import Optional
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,8 +16,8 @@ class PropertySerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     coordinates = CoordinatesSerializer()
     landlord_fullname = serializers.SerializerMethodField()
-
-    def get_landlord_fullname(self, obj):
+    
+    def get_landlord_fullname(self, obj) -> Optional[str]:
         if obj.landlord:
             return f'{obj.landlord.first_name} {obj.landlord.last_name}'
         return None
