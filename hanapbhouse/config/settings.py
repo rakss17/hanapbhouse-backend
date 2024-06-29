@@ -28,6 +28,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+FRONTEND_DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -92,7 +93,7 @@ DJOSER = {
         'activation': 'config.email.ActivationEmail'
     },
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-    'ACTIVATION_URL': 'api/v1/accounts/activation/{uid}/{token}',
+    'ACTIVATION_URL': 'activation/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'api/v1/accounts/reset_password/{uid}/{token}',
     'SERIALIZERS': {
         'user_create': 'accounts.serializers.CustomUserSerializer',
@@ -191,6 +192,12 @@ CORS_EXPOSE_HEADERS = ['Content-Disposition']
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 SITE_NAME = 'HanapBHouse'
+
+DOMAIN = ''
+if (FRONTEND_DEBUG):
+    DOMAIN = 'exp'
+else:
+    DOMAIN = 'hanapbhouse'
 
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''
