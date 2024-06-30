@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='user',
+            model_name='customuser',
             name='id',
             field=models.CharField(default=accounts.models.generate_custom_id, editable=False, max_length=17, primary_key=True, serialize=False, unique=True),
         ),

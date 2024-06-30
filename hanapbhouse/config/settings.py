@@ -28,6 +28,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+FRONTEND_DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -89,13 +90,15 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'SEND_CONFIRMATION_EMAIL': True,
     'EMAIL': {
-        'activation': 'config.email.ActivationEmail'
+        'activation': 'config.email.ActivationEmail',
+        'password_reset': 'config.email.PasswordResetEmail',
     },
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-    'ACTIVATION_URL': 'api/v1/accounts/activation/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/accounts/reset_password/{uid}/{token}',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'ACTIVATION_URL': 'activation/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'reset_password_confirm/{uid}/{token}',
     'SERIALIZERS': {
-        'user_create': 'accounts.serializers.UserSerializer',
+        'user_create': 'accounts.serializers.CustomUserSerializer',
     },
 }
 
@@ -188,9 +191,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_EXPOSE_HEADERS = ['Content-Disposition']
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 SITE_NAME = 'HanapBHouse'
+
+DOMAIN = ''
+if (FRONTEND_DEBUG):
+    DOMAIN = 'exp'
+else:
+    DOMAIN = 'hanapbhouse'
 
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''

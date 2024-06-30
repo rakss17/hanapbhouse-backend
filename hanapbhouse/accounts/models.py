@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from utils.helpers import generate_custom_id
 import os
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
     contact_number = models.BigIntegerField(null=True, blank=True)
     gender = models.CharField(max_length=100, null=True, blank=True)
@@ -18,7 +18,7 @@ class User(AbstractUser):
 @receiver(post_migrate)
 def create_superuser(sender, **kwargs):
     if sender.name == 'accounts':
-        Custom_User = User
+        Custom_User = CustomUser
         username = os.getenv('DJANGO_ADMIN_USERNAME')
         email = os.getenv('DJANGO_ADMIN_EMAIL')
         password = os.getenv('DJANGO_ADMIN_PASSWORD')

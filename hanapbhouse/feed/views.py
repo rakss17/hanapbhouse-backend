@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Feed, SavedFeed
 from .serializers import FeedSerializer, SavedFeedSerializer
-from accounts.models import User
+from accounts.models import CustomUser
 from property.models import Property
 from utils.permissions import IsOwnerOrReadOnly
 
@@ -30,7 +30,7 @@ class FeedListCreateView(generics.ListCreateAPIView):
             saved_image = feed_image
 
         # Feed creation
-        owner_instance = User.objects.get(id=owner)
+        owner_instance = CustomUser.objects.get(id=owner)
         property_instance = Property.objects.get(id=content)
         Feed.objects.create(
             owner=owner_instance,
@@ -139,7 +139,7 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         owner = request.data.get('owner')
         content = request.data.get('content')
 
-        owner_instance = User.objects.get(id=owner)
+        owner_instance = CustomUser.objects.get(id=owner)
         feed_instance = Feed.objects.get(id=content)
         SavedFeed.objects.create(
             owner=owner_instance,

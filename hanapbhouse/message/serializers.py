@@ -3,19 +3,20 @@ from .models import Message, UserChannelTracking
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _
 from utils.helpers import format_date_and_time
+from typing import Optional
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_fullname = serializers.SerializerMethodField()
     receiver_fullname = serializers.SerializerMethodField()
 
-    def get_sender_fullname(self, obj):
+    def get_sender_fullname(self, obj) -> Optional[str]:
         if obj.sender:
             sender = obj.sender
             sender_fullname = f'{sender.first_name} {sender.last_name}'
             return sender_fullname
         return None
     
-    def get_receiver_fullname(self, obj):
+    def get_receiver_fullname(self, obj) -> Optional[str]:
         if obj.receiver:
             receiver = obj.receiver
             receiver_fullname = f'{receiver.first_name} {receiver.last_name}'
