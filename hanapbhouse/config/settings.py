@@ -90,11 +90,13 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     'SEND_CONFIRMATION_EMAIL': True,
     'EMAIL': {
-        'activation': 'config.email.ActivationEmail'
+        'activation': 'config.email.ActivationEmail',
+        'password_reset': 'config.email.PasswordResetEmail',
     },
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'ACTIVATION_URL': 'activation/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/accounts/reset_password/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'reset_password_confirm/{uid}/{token}',
     'SERIALIZERS': {
         'user_create': 'accounts.serializers.CustomUserSerializer',
     },
