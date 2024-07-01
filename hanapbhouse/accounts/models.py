@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
     contact_number = models.BigIntegerField(null=True, blank=True)
     gender = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
+    preferred_area = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.username
