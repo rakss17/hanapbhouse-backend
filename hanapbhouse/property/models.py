@@ -10,7 +10,8 @@ class Address(models.Model):
     street_3 = models.CharField(max_length=1000, null=True, blank=True)
     city = models.CharField(max_length=1000, null=True, blank=True)
     province = models.CharField(max_length=1000, null=True, blank=True)
-    country = models.CharField(max_length=1000, null=True, blank=True)
+    region = models.CharField(max_length=1000, null=True, blank=True)
+    country = models.CharField(max_length=1000, null=True, blank=True, default="Philippines")
     
     def __str__(self):
         return f'{self.street_1}, {self.street_2}'
