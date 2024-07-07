@@ -4,7 +4,7 @@ from accounts.models import CustomUser
 from utils.helpers import generate_custom_id
    
 class Address(models.Model):
-    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
+    id = models.CharField(primary_key=True, max_length=25, default=generate_custom_id, editable=False, unique=True)
     street_1 = models.CharField(max_length=1000, null=True, blank=True)
     street_2 = models.CharField(max_length=1000, null=True, blank=True)
     street_3 = models.CharField(max_length=1000, null=True, blank=True)
@@ -17,7 +17,7 @@ class Address(models.Model):
         return f'{self.street_1}, {self.street_2}'
     
 class Coordinates(models.Model):
-    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
+    id = models.CharField(primary_key=True, max_length=25, default=generate_custom_id, editable=False, unique=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
@@ -25,7 +25,7 @@ class Coordinates(models.Model):
         return f'{self.latitude}, {self.longitude}'
 
 class Property(models.Model):
-    id = models.CharField(primary_key=True, max_length=17, default=generate_custom_id, editable=False, unique=True)
+    id = models.CharField(primary_key=True, max_length=25, default=generate_custom_id, editable=False, unique=True)
     landlord = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name="property_landlord")
     address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="property_address")
     coordinates = models.ForeignKey(Coordinates, on_delete=models.SET_NULL, null=True, blank=True, related_name="property_coordinates")
