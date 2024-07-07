@@ -20,9 +20,9 @@ class FeedSerializer(serializers.ModelSerializer):
     
     @extend_schema_field(serializers.ImageField())
     def get_owner_image(self, obj) -> Optional[str]:
-        if obj.owner:
+        if obj.owner.image:
             owner = obj.owner
-            owner_image = owner.image.url
+            owner_image = owner.image
             return owner_image
         return None
     
