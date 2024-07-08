@@ -127,29 +127,7 @@ class VisitFeedByUserView(generics.ListAPIView):
             'feed_data': serializer.data,
             'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
         }, status=200)
-
-class IsFeedSavedView(generics.ListAPIView):
-    permission_classes =[IsAuthenticated]
-    serializer_class = SavedFeedSerializer
-
-    def list(self, request, *args, **kwargs):
-        # Assuming 'ids' is passed as a comma-separated string in the query parameters
-        ids_param = request.query_params.get('ids', '')
-        ids_list = ids_param.split(', ') if ids_param else []
-
-        saved_feeds = SavedFeed.objects.filter(content__id__in=ids_list)
-
-        # Extract existing IDs
-        existing_ids = [saved_feed.content.id for saved_feed in saved_feeds]
-
-        # Prepare the response with only existing IDs
-        response_data = {
-            "exists": bool(existing_ids),
-            "ids": existing_ids
-        }
-
-        return Response(response_data)
-    
+  
 class SavedFeedCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SavedFeedSerializer
@@ -171,13 +149,11 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         }, status=200)
     
     def create(self, request, *args, **kwargs):
-        owner = request.data.get('owner')
         content = request.data.get('content')
 
-        owner_instance = CustomUser.objects.get(id=owner)
         feed_instance = Feed.objects.get(id=content)
         SavedFeed.objects.create(
-            owner=owner_instance,
+            owner=self.request.user,
             content=feed_instance,
         )
 

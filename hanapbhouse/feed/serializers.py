@@ -4,12 +4,14 @@ from property.serializers import PropertySerializer
 from django.utils.timezone import localtime
 from utils.helpers import format_date_and_time
 from drf_spectacular.utils import extend_schema_field
+from django.conf import settings
 from typing import Optional
 
 class FeedSerializer(serializers.ModelSerializer):
     content = PropertySerializer()
     owner_fullname = serializers.SerializerMethodField()
     owner_image = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
 
     def get_owner_fullname(self, obj) -> Optional[str]:
@@ -22,22 +24,28 @@ class FeedSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.ImageField())
     def get_owner_image(self, obj) -> Optional[str]:
         if obj.owner.image:
-            owner = obj.owner
-            owner_image = owner.image
+            image_path = obj.owner.image.name
+            owner_image = f"media/{image_path}"
             return owner_image
         return None
     
-    def get_is_saved(self, obj):
-        # Access the current user from the serializer context
+    @extend_schema_field(serializers.ImageField())
+    def get_image(self, obj) -> Optional[str]:
+        if obj.image:
+            image_path = obj.image.name
+            image = f"media/{image_path}"
+            return image
+        return None
+    
+    def get_is_saved(self, obj) -> Optional[str]:
+       
         user = self.context['request'].user
-        print("user", user.id)
-        # Check if the feed is saved by the current user
+
         return SavedFeed.objects.filter(content__id=obj.id, owner=user.id).exists()
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
-        # Convert send_timestamp and read_timestamp to local timezone
         time_local = localtime(instance.timestamp)
         
         serializer_type = "other"
@@ -78,7 +86,6 @@ class SavedFeedSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
-        # Convert send_timestamp and read_timestamp to local timezone
         time_local = localtime(instance.timestamp)
         
         serializer_type = "other"
