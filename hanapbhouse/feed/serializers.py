@@ -10,6 +10,7 @@ class FeedSerializer(serializers.ModelSerializer):
     content = PropertySerializer()
     owner_fullname = serializers.SerializerMethodField()
     owner_image = serializers.SerializerMethodField()
+    is_saved = serializers.SerializerMethodField()
 
     def get_owner_fullname(self, obj) -> Optional[str]:
         if obj.owner:
@@ -26,6 +27,13 @@ class FeedSerializer(serializers.ModelSerializer):
             return owner_image
         return None
     
+    def get_is_saved(self, obj):
+        # Access the current user from the serializer context
+        user = self.context['request'].user
+        print("user", user.id)
+        # Check if the feed is saved by the current user
+        return SavedFeed.objects.filter(content__id=obj.id, owner=user.id).exists()
+    
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
@@ -39,7 +47,7 @@ class FeedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feed
-        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp', 'owner_image']
+        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp', 'owner_image', 'is_saved']
 
     def update(self, instance, validated_data):
         content_data = validated_data.pop('content', None)

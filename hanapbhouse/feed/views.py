@@ -69,7 +69,7 @@ class PublicFeedListView(generics.ListAPIView):
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.get_page(page_number)
 
-        serializer = self.serializer_class(page_obj.object_list, many=True)
+        serializer = self.serializer_class(page_obj.object_list, many=True, context={'request': request})
 
         return Response({
             'feed_data': serializer.data,
@@ -127,13 +127,48 @@ class VisitFeedByUserView(generics.ListAPIView):
             'feed_data': serializer.data,
             'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
         }, status=200)
+
+class IsFeedSavedView(generics.ListAPIView):
+    permission_classes =[IsAuthenticated]
+    serializer_class = SavedFeedSerializer
+
+    def list(self, request, *args, **kwargs):
+        # Assuming 'ids' is passed as a comma-separated string in the query parameters
+        ids_param = request.query_params.get('ids', '')
+        ids_list = ids_param.split(', ') if ids_param else []
+
+        saved_feeds = SavedFeed.objects.filter(content__id__in=ids_list)
+
+        # Extract existing IDs
+        existing_ids = [saved_feed.content.id for saved_feed in saved_feeds]
+
+        # Prepare the response with only existing IDs
+        response_data = {
+            "exists": bool(existing_ids),
+            "ids": existing_ids
+        }
+
+        return Response(response_data)
     
 class SavedFeedCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SavedFeedSerializer
 
-    def get_queryset(self):
-        return SavedFeed.objects.filter(owner=self.request.user)
+    def list(self, request, *args, **kwargs):
+
+        queryset = SavedFeed.objects.filter(owner=self.request.user)
+
+        page_size = 10
+        page_number = request.query_params.get('page', 1)
+        paginator = Paginator(queryset, page_size)
+        page_obj = paginator.get_page(page_number)
+
+        serializer = self.serializer_class(page_obj.object_list, many=True)
+
+        return Response({
+            'savedfeed_data': serializer.data,
+            'next_page': page_obj.has_next() and page_obj.next_page_number() or None,
+        }, status=200)
     
     def create(self, request, *args, **kwargs):
         owner = request.data.get('owner')
