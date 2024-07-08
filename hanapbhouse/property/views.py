@@ -33,7 +33,6 @@ class PropertListCreateView(generics.ListCreateAPIView):
             return Response({"error": "Invalid latitude or longitude values."}, status=400)
 
         # Property data from HTTP Post Request
-        landlord = request.data.get('landlord')
         number_of_vacant = request.data.get('number_of_vacant')
         property_type = request.data.get('type')
         description = request.data.get('description')
@@ -67,11 +66,9 @@ class PropertListCreateView(generics.ListCreateAPIView):
         else:
             coordinates_created = coordinates_filtered_from_db.first()
 
-        landlord_instance = CustomUser.objects.get(id=landlord)
-
         # Property model instance creation
         property_created = Property.objects.create(
-            landlord=landlord_instance,
+            landlord=self.request.user,
             address=address_created,
             coordinates=coordinates_created,
             number_of_vacant=number_of_vacant,

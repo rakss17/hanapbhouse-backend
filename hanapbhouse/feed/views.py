@@ -19,7 +19,6 @@ class FeedListCreateView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
          # Feed data from HTTP Post Request
-        owner = request.data.get('owner')
         content = request.data.get('content')
         feed_image = request.FILES.get('image')
 
@@ -30,10 +29,9 @@ class FeedListCreateView(generics.ListCreateAPIView):
             saved_image = feed_image
 
         # Feed creation
-        owner_instance = CustomUser.objects.get(id=owner)
         property_instance = Property.objects.get(id=content)
         Feed.objects.create(
-            owner=owner_instance,
+            owner=self.request.user,
             content=property_instance,
             image=saved_image
         )
@@ -48,27 +46,28 @@ class PublicFeedListView(generics.ListAPIView):
         street_3 = request.query_params.get('street_3')
         city = request.query_params.get('city')
         category = request.query_params.get('category')
-
         timezone.activate('Asia/Manila')
         queryset = Feed.objects.all().exclude(owner=self.request.user)
 
-        if category and category != "All":
-            queryset = queryset.filter(Q(content__type__icontains=category))
+        if category and category != "All":    
+            queryset = queryset.filter(Q(content__type__icontains=category)).exclude(owner=self.request.user)
+        elif category and category == "All":
+            queryset = Feed.objects.all().exclude(owner=self.request.user)
 
         if street_3 and city:
             queryset = queryset.filter(Q(content__address__street_3__icontains=street_3) & 
-                                       Q(content__address__city__icontains=city))
+                                       Q(content__address__city__icontains=city)).exclude(owner=self.request.user)
         elif street_3:
-            queryset = queryset.filter(Q(content__address__street_3__icontains=street_3))
+            queryset = queryset.filter(Q(content__address__street_3__icontains=street_3)).exclude(owner=self.request.user)
         elif city:
-            queryset = queryset.filter(Q(content__address__city__icontains=city))
+            queryset = queryset.filter(Q(content__address__city__icontains=city)).exclude(owner=self.request.user)
             
         queryset = queryset.order_by('timestamp')
         page_size = 10
         page_number = request.query_params.get('page', 1)
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.get_page(page_number)
-
+        
         serializer = self.serializer_class(page_obj.object_list, many=True, context={'request': request})
 
         return Response({
