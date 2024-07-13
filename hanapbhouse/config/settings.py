@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'djoser',
     'channels',
     'djmoney',
+    'phonenumber_field',
     'accounts',
     'property',
     'feed',

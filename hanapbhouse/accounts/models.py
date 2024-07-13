@@ -3,11 +3,12 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 from utils.helpers import generate_custom_id
+from phonenumber_field.modelfields import PhoneNumberField
 import os
 
 class CustomUser(AbstractUser):
     id = models.CharField(primary_key=True, max_length=25, default=generate_custom_id, editable=False, unique=True)
-    contact_number = models.BigIntegerField(null=True, blank=True)
+    contact_number = PhoneNumberField(null=True, blank=True)
     gender = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to="profile_images/", null=True, blank=True)
     preferred_area = models.CharField(max_length=200, null=True, blank=True)

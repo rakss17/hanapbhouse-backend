@@ -16,15 +16,21 @@ class PropertySerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     coordinates = CoordinatesSerializer()
     landlord_fullname = serializers.SerializerMethodField()
+    landlord_contactnumber = serializers.SerializerMethodField()
     
     def get_landlord_fullname(self, obj) -> Optional[str]:
         if obj.landlord:
             return f'{obj.landlord.first_name} {obj.landlord.last_name}'
         return None
+    
+    def get_landlord_contactnumber(self, obj) -> Optional[str]:
+        if obj.landlord and obj.landlord.contact_number:
+            return str(obj.landlord.contact_number)
+        return None
 
     class Meta:
         model = Property
-        fields = ['id', 'landlord', 'landlord_fullname', 'number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address', 'coordinates']
+        fields = ['id', 'landlord', 'landlord_fullname', 'landlord_contactnumber', 'number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address', 'coordinates']
 
     def update(self, instance, validated_data):
         address_data = validated_data.pop('address', None)

@@ -17,6 +17,7 @@ channels-redis = "*"
 daphne = "*"
 drf-spectacular = {extras = ["sidecar"], version = "*"}
 psycopg2 = "*"
+django-phonenumber-field = {extras = ["phonenumbers"], version = "*"}
 
 [dev-packages]
 
