@@ -17,6 +17,8 @@ class PropertySerializer(serializers.ModelSerializer):
     coordinates = CoordinatesSerializer()
     landlord_fullname = serializers.SerializerMethodField()
     landlord_contactnumber = serializers.SerializerMethodField()
+    number_of_vacant_male = serializers.SerializerMethodField()
+    number_of_vacant_female = serializers.SerializerMethodField()
     
     def get_landlord_fullname(self, obj) -> Optional[str]:
         if obj.landlord:
@@ -27,10 +29,22 @@ class PropertySerializer(serializers.ModelSerializer):
         if obj.landlord and obj.landlord.contact_number:
             return str(obj.landlord.contact_number)
         return None
+    
+    # TO-DO
+    def get_number_of_vacant_male(self, obj) -> Optional[str]:
+        if obj.number_of_male_tenant:
+            return obj.number_of_male_tenant
+        return None
+    
+    # TO-DO
+    def get_number_of_vacant_female(self, obj) -> Optional[str]:
+        if obj.number_of_female_tenant:
+            return obj.number_of_female_tenant
+        return None
 
     class Meta:
         model = Property
-        fields = ['id', 'landlord', 'landlord_fullname', 'landlord_contactnumber', 'number_of_vacant', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address', 'coordinates']
+        fields = ['id', 'landlord', 'landlord_fullname', 'landlord_contactnumber', 'number_of_vacant_male', 'number_of_vacant_female', 'type', 'description', 'inclusion', 'rent', 'is_available', 'address', 'coordinates']
 
     def update(self, instance, validated_data):
         address_data = validated_data.pop('address', None)
