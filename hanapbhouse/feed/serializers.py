@@ -13,6 +13,7 @@ class FeedSerializer(serializers.ModelSerializer):
     owner_image = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
+    saved_feed_id = serializers.SerializerMethodField()
 
     def get_owner_fullname(self, obj) -> Optional[str]:
         if obj.owner:
@@ -43,6 +44,19 @@ class FeedSerializer(serializers.ModelSerializer):
 
         return SavedFeed.objects.filter(content__id=obj.id, owner=user.id).exists()
     
+    def get_saved_feed_id(self, obj) -> Optional[str]:
+       
+        user = self.context['request'].user
+
+        try:
+            saved_feed_data = SavedFeed.objects.get(content__id=obj.id, owner=user.id)
+            return saved_feed_data.id
+        except SavedFeed.DoesNotExist:
+            return None
+        except SavedFeed.MultipleObjectsReturned:
+            # Handle the case where multiple objects are returned if necessary
+            return None
+    
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         
@@ -55,7 +69,7 @@ class FeedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feed
-        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp', 'owner_image', 'is_saved']
+        fields = ['id', 'content', 'owner', 'owner_fullname', 'image', 'timestamp', 'owner_image', 'is_saved', 'saved_feed_id']
 
     def update(self, instance, validated_data):
         content_data = validated_data.pop('content', None)

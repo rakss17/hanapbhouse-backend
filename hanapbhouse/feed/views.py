@@ -148,15 +148,16 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         }, status=200)
     
     def create(self, request, *args, **kwargs):
-        content = request.data.get('content')
+        content = request.data.get('feed_id')
 
         feed_instance = Feed.objects.get(id=content)
-        SavedFeed.objects.create(
+        saved_feed = SavedFeed.objects.create(
             owner=self.request.user,
             content=feed_instance,
         )
+        
 
-        return Response({"message": "Saved successfully"}, status=201)\
+        return Response({"is_saved": True, "saved_feed_id": saved_feed.id}, status=201)
         
 class UnsavedFeedView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
