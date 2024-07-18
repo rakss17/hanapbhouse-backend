@@ -3,11 +3,14 @@ from .models import Message, UserChannelTracking
 from django.utils.timezone import localtime
 from django.utils.translation import gettext_lazy as _
 from utils.helpers import format_date_and_time
+from drf_spectacular.utils import extend_schema_field
 from typing import Optional
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_fullname = serializers.SerializerMethodField()
+    sender_image =  serializers.SerializerMethodField()
     receiver_fullname = serializers.SerializerMethodField()
+    receiver_image = serializers.SerializerMethodField()
 
     def get_sender_fullname(self, obj) -> Optional[str]:
         if obj.sender:
@@ -21,6 +24,22 @@ class MessageSerializer(serializers.ModelSerializer):
             receiver = obj.receiver
             receiver_fullname = f'{receiver.first_name} {receiver.last_name}'
             return receiver_fullname
+        return None
+    
+    @extend_schema_field(serializers.ImageField())
+    def get_sender_image(self, obj) -> Optional[str]:
+        if obj.sender.image:
+            image_path = obj.sender.image.name
+            sender_image = f"media/{image_path}"
+            return sender_image
+        return None
+    
+    @extend_schema_field(serializers.ImageField())
+    def get_receiver_image(self, obj) -> Optional[str]:
+        if obj.receiver.image:
+            image_path = obj.receiver.image.name
+            receiver_image = f"media/{image_path}"
+            return receiver_image
         return None
     
     def to_representation(self, instance):
@@ -42,7 +61,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'room_name', 'content', 'sender', 'sender_fullname', 'send_timestamp', 'receiver', 'receiver_fullname', 'read_timestamp', 'is_read_by_receiver']
+        fields = ['id', 'room_name', 'content', 'sender', 'sender_fullname', 'send_timestamp', 'receiver', 'receiver_fullname', 'read_timestamp', 'is_read_by_receiver', 'sender_image', 'receiver_image']
 
 class UserChannelTrackingSerializer(serializers.ModelSerializer):
     class Meta:
