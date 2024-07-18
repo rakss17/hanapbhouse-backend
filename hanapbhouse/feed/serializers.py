@@ -53,9 +53,6 @@ class FeedSerializer(serializers.ModelSerializer):
             return saved_feed_data.id
         except SavedFeed.DoesNotExist:
             return None
-        except SavedFeed.MultipleObjectsReturned:
-            # Handle the case where multiple objects are returned if necessary
-            return None
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)

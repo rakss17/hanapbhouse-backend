@@ -151,13 +151,19 @@ class SavedFeedCreateView(generics.ListCreateAPIView):
         content = request.data.get('feed_id')
 
         feed_instance = Feed.objects.get(id=content)
-        saved_feed = SavedFeed.objects.create(
-            owner=self.request.user,
-            content=feed_instance,
-        )
-        
 
-        return Response({"is_saved": True, "saved_feed_id": saved_feed.id}, status=201)
+        saved_feed_exist = SavedFeed.objects.filter(owner=self.request.user, content=feed_instance).exists()
+
+        saved_feed_id = None
+
+        if not saved_feed_exist:
+            saved_feed = SavedFeed.objects.create(
+                owner=self.request.user,
+                content=feed_instance,
+            )
+            saved_feed_id = saved_feed.id
+
+        return Response({"is_saved": True, "saved_feed_id": saved_feed_id}, status=201)
         
 class UnsavedFeedView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
