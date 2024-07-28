@@ -19,7 +19,7 @@ class ConversationView(generics.ListAPIView):
 
         queryset = queryset.order_by('-send_timestamp')
         page_size = 10
-        page_number = request.query_params.get('page_number', 1)
+        page_number = request.query_params.get('page', 1)
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.get_page(page_number)
 
